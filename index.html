@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tropics of Cancer and Capricorn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #map {
+            height: 100dvh;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYqgsFV-jUOzO5wzY2pG1u7EDG2Rrn6EY&callback=initMap"
+        async defer></script>
+
+    <script>
+        function initMap() {
+            // Initial map centered roughly on the tropics
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 3,
+                center: { lat: 0, lng: 0 },
+                streetViewControl: false,
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.BOTTOM_CENTER,  // move to bottom
+                },
+            });
+
+            // Tropic of Cancer (23.43663°N)
+            const cancerPath = [];
+            for (let lon = -180; lon <= 180; lon += 1) {
+                cancerPath.push({ lat: 23.43663, lng: lon });
+            }
+
+            const cancerLine = new google.maps.Polyline({
+                path: cancerPath,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 3,
+            });
+
+            cancerLine.setMap(map);
+
+            // Tropic of Capricorn (-23.43663°S)
+            const capricornPath = [];
+            for (let lon = -180; lon <= 180; lon += 1) {
+                capricornPath.push({ lat: -23.43663, lng: lon });
+            }
+
+            const capricornLine = new google.maps.Polyline({
+                path: capricornPath,
+                geodesic: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 1.0,
+                strokeWeight: 3,
+            });
+
+            capricornLine.setMap(map);
+
+            // Ask for user location and center map if allowed
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        map.setCenter({ lat: userLat, lng: userLng });
+                        // Add a blue dot marker for user location
+                        new google.maps.Marker({
+                            position: { lat: userLat, lng: userLng },
+                            map: map,
+                            title: "Your Location",
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                scale: 8,
+                                fillColor: "#4285F4",
+                                fillOpacity: 1,
+                                strokeColor: "#fff",
+                                strokeWeight: 2
+                            }
+                        });
+                    },
+                    (error) => {
+                        // User denied or error, do nothing (map stays at default)
+                    }
+                );
+            }
+
+            // Click listener
+            let currentInfoWindow = null;
+            map.addListener("click", (mapsMouseEvent) => {
+                const clickedLatLng = mapsMouseEvent.latLng;
+                const clickedLat = clickedLatLng.lat();
+                const clickedLng = clickedLatLng.lng();
+
+                const cancerDistanceKm = Math.abs(clickedLat - 23.43663) * 111.32;  // Approx km per degree latitude
+                const capricornDistanceKm = Math.abs(clickedLat + 23.43663) * 111.32;
+
+                const toleranceKm = 10.0;
+
+                let isNearTropic = false;
+                let tropicName = "";
+
+                if (cancerDistanceKm <= toleranceKm) {
+                    isNearTropic = true;
+                    tropicName = "Tropic of Cancer";
+                } else if (capricornDistanceKm <= toleranceKm) {
+                    isNearTropic = true;
+                    tropicName = "Tropic of Capricorn";
+                }
+
+                if (isNearTropic) {
+                    if (currentInfoWindow) {
+                        currentInfoWindow.close();
+                    }
+
+                    const infoWindow = new google.maps.InfoWindow({
+                        position: clickedLatLng,
+                    });
+
+                    infoWindow.setContent(
+                        `<div>
+                        <strong>Near ${tropicName}!</strong><br>
+                        Location: ${clickedLat.toFixed(5)}, ${clickedLng.toFixed(5)}<br/>
+                        <br/>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=${clickedLat},${clickedLng}" target="_blank">
+                            Get Directions
+                        </a>
+                    </div>`
+                    );
+
+                    infoWindow.open(map);
+                    currentInfoWindow = infoWindow;
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>
