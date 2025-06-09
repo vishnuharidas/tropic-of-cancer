@@ -11,128 +11,290 @@
             box-sizing: border-box;
         }
 
-        #map {
+        #contents {
             height: 100dvh;
             width: 100%;
+            display: flex;
+            flex-direction: row;
+        }
+
+        #map {
+            width: 80%;
+        }
+
+        #info {
+            width: 20%;
+            padding: 1.5em;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            overflow-y: scroll;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s, box-shadow 0.3s;
+        }
+
+        #info p {
+            margin: 1em 0;
+            font-size: 1.2em;
+            line-height: 1.2em;
+        }
+
+        #info-toggle {
+            display: none;
+        }
+
+        @media (max-width: 1080px) {
+            #contents {
+                position: relative;
+                display: block;
+                height: 100dvh;
+            }
+
+            #map {
+                width: 100vw;
+                height: 100dvh;
+                min-height: 100dvh;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 0;
+            }
+
+            #info {
+                width: calc(100vw - 2em);
+                max-width: 98vw;
+                max-height: calc(100dvh - 2em);
+                margin: 1em auto 0 auto;
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(248, 249, 250, 0.85);
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+                border-radius: 12px;
+                z-index: 2;
+                padding: 1.2em 1em 1em 1em;
+                font-size: 1em;
+                overflow-y: scroll;
+                transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s, box-shadow 0.3s;
+            }
+
+            #info.collapsed {
+                box-shadow: none;
+            }
+
+            #info-content {
+                transition: opacity 0.3s;
+            }
+
+            #info-toggle {
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid #999;
+                background: #f0f0f0;
+                border-radius: 50%;
+                width: 45px;
+                height: 45px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: x-large;
+            }
+
+            #info.collapsed #info-content {
+                opacity: 0;
+                pointer-events: none;
+                height: 0;
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+                display: block;
+            }
+
+            #date-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 40px;
+                height: 40px;
+                background: #4285F4;
+                border-radius: 50%;
+            }
         }
     </style>
 </head>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYqgsFV-jUOzO5wzY2pG1u7EDG2Rrn6EY&loading=async&callback=initMap" async defer></script>
+<script>
 
-<body>
+    let map;
+    let subsolarLine;
 
-    <div id="map"></div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYqgsFV-jUOzO5wzY2pG1u7EDG2Rrn6EY&callback=initMap"
-        async defer></script>
+    function getSunDeclination(date) {
+        const N = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+        const radians = 2 * Math.PI * (284 + N) / 365;
+        const declination = 23.44 * Math.sin(radians);
+        return declination;
+    }
 
-    <script>
-        function initMap() {
-            // Initial map centered roughly on the tropics
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 3,
-                center: { lat: 0, lng: 0 },
-                streetViewControl: false,
-                mapTypeControl: true,
-                mapTypeControlOptions: {
-                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-                    position: google.maps.ControlPosition.BOTTOM_CENTER,  // move to bottom
+    function showSubSolarPoint(map, day) {
+        // Subsolar point line (green)
+        const declination = getSunDeclination(day);
+        const subsolarPath = [];
+        for (let lon = -180; lon <= 180; lon += 1) {
+            subsolarPath.push({ lat: declination, lng: lon });
+        }
+
+        if (subsolarLine) {
+            subsolarLine.setMap(null);  // Remove existing line if it exists
+        }
+
+        subsolarLine = new google.maps.Polyline({
+            path: subsolarPath,
+            geodesic: true,
+            strokeColor: '#000000',
+            strokeOpacity: 0,
+            strokeWeight: 2,
+            icons: [{
+                icon: {
+                    path: 'M 0,-1 0,1',  // small vertical line = dash
+                    strokeOpacity: 1,
+                    scale: 3
                 },
-            });
+                offset: '0',
+                repeat: '15px'  // spacing between dashes
+            }],
+        });
 
-            // Tropic of Cancer (23.43663°N)
-            const cancerPath = [];
-            for (let lon = -180; lon <= 180; lon += 1) {
-                cancerPath.push({ lat: 23.43663, lng: lon });
+        subsolarLine.setMap(map);
+    }
+
+    function initMap() {
+        // Initial map centered roughly on the tropics
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 3,
+            center: { lat: 0, lng: 0 },
+            streetViewControl: false,
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                position: google.maps.ControlPosition.BOTTOM_CENTER,  // move to bottom
+            },
+        });
+
+        // Tropic of Cancer (23.43663°N)
+        const cancerPath = [];
+        for (let lon = -180; lon <= 180; lon += 1) {
+            cancerPath.push({ lat: 23.43663, lng: lon });
+        }
+
+        const cancerLine = new google.maps.Polyline({
+            path: cancerPath,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 3,
+        });
+
+        cancerLine.setMap(map);
+
+        // Tropic of Capricorn (-23.43663°S)
+        const capricornPath = [];
+        for (let lon = -180; lon <= 180; lon += 1) {
+            capricornPath.push({ lat: -23.43663, lng: lon });
+        }
+
+        const capricornLine = new google.maps.Polyline({
+            path: capricornPath,
+            geodesic: true,
+            strokeColor: '#0000FF',
+            strokeOpacity: 1.0,
+            strokeWeight: 3,
+        });
+
+        capricornLine.setMap(map);
+
+        // Subsolar point line (black dashed line)
+        showSubSolarPoint(map, new Date())
+
+        const cancerLabelMarker = new google.maps.Marker({
+            position: { lat: 23.43663 },  // right side of map (lng 180)
+            map: map,
+            label: {
+                text: 'Tropic of Cancer',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                color: '#FF0000',
+            },
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 0,  // invisible marker (just show label)
+            },
+        });
+
+
+        // Ask for user location and center map if allowed
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    map.setCenter({ lat: userLat, lng: userLng });
+                    // Add a blue dot marker for user location
+                    new google.maps.Marker({
+                        position: { lat: userLat, lng: userLng },
+                        map: map,
+                        title: "Your Location",
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 8,
+                            fillColor: "#4285F4",
+                            fillOpacity: 1,
+                            strokeColor: "#fff",
+                            strokeWeight: 2
+                        }
+                    });
+                },
+                (error) => {
+                    // User denied or error, do nothing (map stays at default)
+                }
+            );
+        }
+
+        // Click listener
+        let currentInfoWindow = null;
+        map.addListener("click", (mapsMouseEvent) => {
+            const clickedLatLng = mapsMouseEvent.latLng;
+            const clickedLat = clickedLatLng.lat();
+            const clickedLng = clickedLatLng.lng();
+
+            const cancerDistanceKm = Math.abs(clickedLat - 23.43663) * 111.32;  // Approx km per degree latitude
+            const capricornDistanceKm = Math.abs(clickedLat + 23.43663) * 111.32;
+
+            const toleranceKm = 10.0;
+
+            let isNearTropic = false;
+            let tropicName = "";
+
+            if (cancerDistanceKm <= toleranceKm) {
+                isNearTropic = true;
+                tropicName = "Tropic of Cancer";
+            } else if (capricornDistanceKm <= toleranceKm) {
+                isNearTropic = true;
+                tropicName = "Tropic of Capricorn";
             }
 
-            const cancerLine = new google.maps.Polyline({
-                path: cancerPath,
-                geodesic: true,
-                strokeColor: '#FF0000',
-                strokeOpacity: 1.0,
-                strokeWeight: 3,
-            });
-
-            cancerLine.setMap(map);
-
-            // Tropic of Capricorn (-23.43663°S)
-            const capricornPath = [];
-            for (let lon = -180; lon <= 180; lon += 1) {
-                capricornPath.push({ lat: -23.43663, lng: lon });
-            }
-
-            const capricornLine = new google.maps.Polyline({
-                path: capricornPath,
-                geodesic: true,
-                strokeColor: '#0000FF',
-                strokeOpacity: 1.0,
-                strokeWeight: 3,
-            });
-
-            capricornLine.setMap(map);
-
-            // Ask for user location and center map if allowed
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const userLat = position.coords.latitude;
-                        const userLng = position.coords.longitude;
-                        map.setCenter({ lat: userLat, lng: userLng });
-                        // Add a blue dot marker for user location
-                        new google.maps.Marker({
-                            position: { lat: userLat, lng: userLng },
-                            map: map,
-                            title: "Your Location",
-                            icon: {
-                                path: google.maps.SymbolPath.CIRCLE,
-                                scale: 8,
-                                fillColor: "#4285F4",
-                                fillOpacity: 1,
-                                strokeColor: "#fff",
-                                strokeWeight: 2
-                            }
-                        });
-                    },
-                    (error) => {
-                        // User denied or error, do nothing (map stays at default)
-                    }
-                );
-            }
-
-            // Click listener
-            let currentInfoWindow = null;
-            map.addListener("click", (mapsMouseEvent) => {
-                const clickedLatLng = mapsMouseEvent.latLng;
-                const clickedLat = clickedLatLng.lat();
-                const clickedLng = clickedLatLng.lng();
-
-                const cancerDistanceKm = Math.abs(clickedLat - 23.43663) * 111.32;  // Approx km per degree latitude
-                const capricornDistanceKm = Math.abs(clickedLat + 23.43663) * 111.32;
-
-                const toleranceKm = 10.0;
-
-                let isNearTropic = false;
-                let tropicName = "";
-
-                if (cancerDistanceKm <= toleranceKm) {
-                    isNearTropic = true;
-                    tropicName = "Tropic of Cancer";
-                } else if (capricornDistanceKm <= toleranceKm) {
-                    isNearTropic = true;
-                    tropicName = "Tropic of Capricorn";
+            if (isNearTropic) {
+                if (currentInfoWindow) {
+                    currentInfoWindow.close();
                 }
 
-                if (isNearTropic) {
-                    if (currentInfoWindow) {
-                        currentInfoWindow.close();
-                    }
+                const infoWindow = new google.maps.InfoWindow({
+                    position: clickedLatLng,
+                });
 
-                    const infoWindow = new google.maps.InfoWindow({
-                        position: clickedLatLng,
-                    });
-
-                    infoWindow.setContent(
-                        `<div>
+                infoWindow.setContent(
+                    `<div>
                         <strong>Near ${tropicName}!</strong><br>
                         Location: ${clickedLat.toFixed(5)}, ${clickedLng.toFixed(5)}<br/>
                         <br/>
@@ -140,14 +302,115 @@
                             Get Directions
                         </a>
                     </div>`
-                    );
+                );
 
-                    infoWindow.open(map);
-                    currentInfoWindow = infoWindow;
+                infoWindow.open(map);
+                currentInfoWindow = infoWindow;
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var infoToggle = document.getElementById("info-toggle");
+        var infoContent = document.getElementById("info-content");
+        var infoDiv = document.getElementById("info");
+        function isMobile() {
+            return window.innerWidth <= 1080;
+        }
+        if (infoToggle && infoContent && infoDiv) {
+            infoToggle.addEventListener("click", function () {
+                if (isMobile()) {
+                    infoDiv.classList.toggle("collapsed");
                 }
             });
         }
-    </script>
+
+        const slider = document.getElementById('date-slider');
+        updateSliderLabel(slider.value);
+        // Helper to format date as "Month Day"
+        function formatDateFromDayOfYear(day) {
+            const year = new Date().getFullYear();
+            const date = new Date(year, 0);
+            date.setDate(day);
+            return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        }
+
+        // Update label on load and slider move
+        function updateSliderLabel(day) {
+            document.getElementById('slider-date-label').textContent = formatDateFromDayOfYear(day);
+        }
+        slider.addEventListener('input', function () {
+            updateSliderLabel(this.value);
+            showSubSolarPoint(map, new Date(new Date().getFullYear(), 0, parseInt(this.value)));
+        });
+
+
+        // Initial state for mobile
+        if (isMobile()) {
+            infoDiv.classList.add("collapsed");
+        } else {
+            infoDiv.classList.remove("collapsed");
+        }
+
+        // Reset slider to today's day of year
+        function updateSlidebarToToday() {
+            const today = new Date();
+            const startOfYear = new Date(today.getFullYear(), 0, 1);
+            const dayOfYear = Math.floor((today - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
+            slider.value = dayOfYear;
+            updateSliderLabel(dayOfYear);
+        }
+
+        updateSlidebarToToday();
+
+        // Add event listener for "Today" link
+        const todayLink = document.getElementById('today-link');
+        if (todayLink) {
+            todayLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                showSubSolarPoint(map, new Date());
+                updateSlidebarToToday(new Date());
+            });
+        }
+    });
+</script>
+
+<body>
+
+    <div id="contents">
+        <div id="info">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h1 style="margin: 0; flex: 1 1 auto; min-width: 0; ">
+                    Tropics of Cancer and Capricorn
+                </h1>
+                <div id="info-toggle" aria-label="Show/hide info" style="flex: 0 0 auto;">❓</div>
+            </div>
+            <div id="info-content">
+                <p>This map shows the Tropic of Cancer and the Tropic of Capricorn.</p>
+
+                <h2 style="border-bottom:3px solid #FF0000;">Tropic of Cancer (red line)</h2>
+                <p>Tropic of Cancer (23.43663°N) is the northernmost latitude where the sun can be directly overhead,
+                    occurring at the June solstice (mostly on June 21st).</p>
+
+                <h2 style="border-bottom:3px solid #0000FF;">Tropic of Capricorn (blue line)</h2>
+                <p>Tropic of Capricorn (-23.43663°S) is the southernmost latitude where the sun can be directly
+                    overhead, occurring at the December solstice (mostly on December 21st).</p>
+
+                <h2 style="border-bottom:3px dashed #000000;">Subsolar Point (black dashed line)</h2>
+                <p>The black dashed line represents the current subsolar point based on today's date. The subsolar point
+                    is the latitude where the sun is directly overhead at noon on a given day.</p>
+
+                <div style="margin-top:2em;">
+                    <label for="date-slider"><strong>Day of Year:</strong> <span id="slider-date-label"></span></label>
+                    <input type="range" id="date-slider" min="1" max="365" value="1" style="width:100%;height:45px;">
+                </div>
+                <p>Use the slider to change the date and see how the subsolar point moves throughout the year.
+                    <a href="#" id="today-link">(Reset)</a>
+                </p>
+            </div>
+        </div>
+        <div id="map"></div>
+    </div>
 
 </body>
 
