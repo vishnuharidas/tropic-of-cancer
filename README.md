@@ -19,7 +19,7 @@ Visit website: [vishnuharidas.github.io/tropic-of-cancer](https://vishnuharidas.
 - These lines define the boundaries of the Earth's tropical zone, which receives the most direct sunlight and has generally warmer climates.
 
 ![Axial tilt vs tropical and polar circles](https://upload.wikimedia.org/wikipedia/commons/4/40/Axial_tilt_vs_tropical_and_polar_circles.svg)
-(Image credit: [cmglee, NASA]("https://commons.wikimedia.org/wiki/File:Axial_tilt_vs_tropical_and_polar_circles.svg"), Public domain, via Wikimedia Commons)
+(Image credit: [cmglee, NASA](https://commons.wikimedia.org/wiki/File:Axial_tilt_vs_tropical_and_polar_circles.svg), Public domain, via Wikimedia Commons)
 
 
 ## Copyright
