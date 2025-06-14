@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Interactive map showing the Tropic of Cancer, Tropic of Capricorn, and the subsolar point throughout the year.">
-    <meta name="keywords"
-        content="Tropic of Cancer, Tropic of Capricorn, subsolar point, map, geography, sun declination, solstice, latitude, Google Maps">
+    <meta name="description" content="Interactive map showing the Tropic of Cancer, Tropic of Capricorn, and the subsolar point throughout the year.">
+    <meta name="keywords" content="Tropic of Cancer, Tropic of Capricorn, subsolar point, map, geography, sun declination, solstice, latitude, Google Maps">
     <meta name="author" content="Vishnu Haridas">
     <title>Tropics of Cancer and Capricorn</title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>☀️</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>☀️</text></svg>">
     <style>
         *,
         *::before,
@@ -176,9 +172,7 @@
             text-decoration: underline;
         }
     </style>
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYqgsFV-jUOzO5wzY2pG1u7EDG2Rrn6EY&loading=async&callback=initMap"
-        async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYqgsFV-jUOzO5wzY2pG1u7EDG2Rrn6EY&loading=async&callback=initMap" async defer></script>
     <script>
         let map, subsolarLine;
         function getSunDeclination(date) {
@@ -361,87 +355,43 @@
             </div>
             <div id="info-content">
                 <div class="info-content-text">
-                    <p>This interactive map shows the Tropic of Cancer, Tropic of Capricorn, and the subsolar point
-                        (where the sun is directly overhead at noon) for any day of the year.</p>
-                    <div id="info-content-legend"
-                        style="margin: 1em;border: 1px solid #ccc;padding: 1rem;border-radius: 10px;background: white;">
+                    <p>This interactive map shows the Tropic of Cancer, Tropic of Capricorn, and the subsolar point (the location where the sun is directly overhead at noon) for any day of the year.</p>
+                    <div id="info-content-legend" style="margin: 1em;border: 1px solid #ccc;padding: 1rem;border-radius: 10px;background: white;">
                         <strong>Legend:</strong>
                         <ul style="list-style: none; padding: 0; margin: 10px 0;">
                             <li style="display: flex; align-items: center; margin-bottom: 0.5em;">
-                                <span
-                                    style="display:inline-block; width: 28px; height: 4px; background: #FF0000; border-radius: 2px; margin-right: 0.7em;"></span>
-                                Tropic of Cancer
+                                <span style="display:inline-block; width: 28px; height: 4px; background: #FF0000; border-radius: 2px; margin-right: 0.7em;"></span>Tropic of Cancer
                             </li>
                             <li style="display: flex; align-items: center; margin-bottom: 0.5em;">
-                                <span
-                                    style="display:inline-block; width: 28px; height: 4px; background: #0000FF; border-radius: 2px; margin-right: 0.7em;"></span>
-                                Tropic of Capricorn
+                                <span style="display:inline-block; width: 28px; height: 4px; background: #0000FF; border-radius: 2px; margin-right: 0.7em;"></span>Tropic of Capricorn
                             </li>
                             <li style="display: flex; align-items: center;">
-                                <span
-                                    style="display:inline-block; width: 28px; height: 0; border-bottom: 3px dashed #000; margin-right: 0.7em;"></span>
-                                Subsolar Point
+                                <span style="display:inline-block; width: 28px; height: 0; border-bottom: 3px dashed #000; margin-right: 0.7em;"></span>Subsolar Point
                             </li>
                         </ul>
                     </div>
-                    <p><strong>Tropic of Cancer</strong> (23.43663°N) is the northernmost latitude where the sun can be
-                        directly overhead, occurring at the June solstice (around June 21st). See the <a
-                            href="https://en.wikipedia.org/wiki/Tropic_of_Cancer#Geography" target="_blank"
-                            rel="noopener">Wikipedia page</a> for a list of popular locations where the Tropic of Cancer
-                        passes through.</p>
-                    <p><strong>Tropic of Capricorn</strong> (23.43663°S) is the southernmost latitude where the sun can
-                        be directly overhead, occurring at the December solstice (around December 21st). See the <a
-                            href="https://en.wikipedia.org/wiki/Tropic_of_Capricorn" target="_blank"
-                            rel="noopener">Wikipedia page</a> for a list of popular locations where the Tropic of
-                        Capricorn passes through.</p>
-                    <p><strong>Subsolar Point</strong> is the latitude where the sun is directly overhead at noon for a
-                        given day. It moves between the Tropic of Cancer and the Tropic of Capricorn throughout the
-                        year.</p>
-                    <p>Use the slider below to change the date and see how the subsolar point moves throughout the year.
-                    </p>
+                    <p><strong>Tropic of Cancer</strong> (23.43663°N) is the northernmost latitude where the sun can be directly overhead, which occurs at the June solstice (around June 21st). See the <a href="https://en.wikipedia.org/wiki/Tropic_of_Cancer#Geography" target="_blank" rel="noopener">Wikipedia page</a> for a list of notable locations the Tropic of Cancer passes through.</p>
+                    <p><strong>Tropic of Capricorn</strong> (23.43663°S) is the southernmost latitude where the sun can be directly overhead, which occurs at the December solstice (around December 21st). See the <a href="https://en.wikipedia.org/wiki/Tropic_of_Capricorn" target="_blank" rel="noopener">Wikipedia page</a> for a list of notable locations the Tropic of Capricorn passes through.</p>
+                    <p><strong>Subsolar Point</strong> is the latitude where the sun is directly overhead at noon on a given day. It moves between the Tropic of Cancer and the Tropic of Capricorn throughout the year.</p>
+                    <p>Use the slider below to change the date and see how the subsolar point moves throughout the year.</p>
                 </div>
                 <div id="info-content-slider" style="margin-top:2em;">
-                    <label for="date-slider">Day of Year: <span id="slider-date-label"></span>
-                    </label>
+                    <label for="date-slider">Day of Year: <span id="slider-date-label"></span></label>
                     <input type="range" id="date-slider" min="1" max="365" value="1">
                 </div>
                 <div class="info-content-text">
-                    <h2>Why the sun&#39;s position changes throughout the year?</h2>
-                    <p>The tilt of the Earth's axis (approximately 23.5 degrees) causes the sun to be directly overhead
-                        at different latitudes throughout the year. This results in the changing position of the
-                        subsolar point, which moves between the Tropic of Cancer and the Tropic of Capricorn as the
-                        Earth orbits the sun.</p>
-                    <a href="https://upload.wikimedia.org/wikipedia/commons/4/40/Axial_tilt_vs_tropical_and_polar_circles.svg"
-                        target="_blank" rel="noopener">
-                        <span style="font-size: small;">Click to view the full image. Source: Wikimedia Commons</span>
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/4/40/Axial_tilt_vs_tropical_and_polar_circles.svg" />
-                    </a>
-
-                    <p>During solstices, the sun is at its highest or lowest point in the sky at noon, depending on the
-                        hemisphere. This is why the Tropic of Cancer and Tropic of Capricorn are located at 23.5 degrees
-                        north and south, respectively.</p>
-                    <p>Explore <a
-                            href="https://astro.unl.edu/classaction/animations/coordsmotion/eclipticsimulator.html"
-                            target="_blank" rel="noopener">this really good interactive animation</a> to understand the
-                        concept better</p>
+                    <h2>Why does the sun's position change throughout the year?</h2>
+                    <p>The tilt of Earth's axis (about 23.4 degrees) causes the sun to be directly overhead at different latitudes during the year. This results in the changing position of the subsolar point, which moves between the Tropic of Cancer and the Tropic of Capricorn as Earth orbits the sun.</p>
+                    <a href="https://upload.wikimedia.org/wikipedia/commons/4/40/Axial_tilt_vs_tropical_and_polar_circles.svg" target="_blank" rel="noopener"><span style="font-size: small;">Click to view the full image. Source: Wikimedia Commons</span><img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Axial_tilt_vs_tropical_and_polar_circles.svg" /></a>
+                    <p>During the solstices, the sun is at its northernmost or southernmost point in the sky at noon, depending on the hemisphere. This is why the Tropic of Cancer and Tropic of Capricorn are located at approximately 23.4 degrees north and south, respectively.</p>
+                    <p>Explore <a href="https://astro.unl.edu/classaction/animations/coordsmotion/eclipticsimulator.html" target="_blank" rel="noopener">this interactive animation</a> to understand the concept better.</p>
                     <button id="info-close-btn">Close</button>
-                    <br />
-                    <hr />
-                    <p style="font-size: small;">
-                        Copyright © 2025
-                        <a href="https://iamvishnu.com" target="_blank" rel="noopener">Vishnu Haridas</a>
-                        <br />
-                        <a href="https://github.com/vishnuharidas/tropic-of-cancer" target="_blank"
-                            rel="noopener">GitHub</a>
-                    </p>
-                    </p>
-
+                    <br /><hr />
+                    <p style="font-size: small;">Copyright © 2025 <a href="https://iamvishnu.com" target="_blank" rel="noopener">Vishnu Haridas</a><br /><a href="https://github.com/vishnuharidas/tropic-of-cancer" target="_blank" rel="noopener">GitHub</a></p>
                 </div>
             </div>
         </aside>
         <main id="map" aria-label="Map showing tropics and subsolar point"></main>
     </div>
 </body>
-
 </html>
