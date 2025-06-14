@@ -178,7 +178,7 @@
         function getSunDeclination(date) {
             const N = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
             const radians = 2 * Math.PI * (284 + N) / 365;
-            return 23.44 * Math.sin(radians);
+            return 23.43663 * Math.sin(radians);
         }
         function showSubSolarPoint(map, day) {
             const declination = getSunDeclination(day);
